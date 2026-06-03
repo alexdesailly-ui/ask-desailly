@@ -91,8 +91,7 @@ body {
 .brand__role {
   font-size: 0.74rem;
   color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -126,7 +125,7 @@ body {
 .intro h1 {
   font-family: "Poppins", sans-serif;
   font-weight: 800;
-  font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  font-size: clamp(1.5rem, 3.8vw, 2.2rem);
   color: var(--navy);
   letter-spacing: -0.02em;
   margin: 0 0 12px;
