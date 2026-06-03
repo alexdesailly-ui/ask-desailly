@@ -137,11 +137,3 @@ if (suggestions) {
     if (chip) ask(chip.textContent.trim());
   });
 }
-
-const cta = document.getElementById("cta");
-if (cta) {
-  cta.addEventListener("click", () => {
-    input.focus();
-    input.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
-}

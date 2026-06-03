@@ -98,23 +98,6 @@ body {
   text-overflow: ellipsis;
 }
 
-.cta {
-  flex: 0 0 auto;
-  background: var(--red);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 11px 22px;
-  font-family: "Poppins", sans-serif;
-  font-size: 0.86rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.cta:hover {
-  background: var(--red-hover);
-}
-
 /* --- Layout principal --- */
 .app {
   max-width: var(--max);
@@ -345,9 +328,6 @@ body {
 @media (max-width: 560px) {
   .brand__role {
     display: none;
-  }
-  .cta {
-    padding: 10px 16px;
   }
   .topbar__inner {
     padding: 12px 14px;
