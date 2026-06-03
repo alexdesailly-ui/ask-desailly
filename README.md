@@ -157,8 +157,11 @@ npm run sync:drive -- --dry     # simulation, n'ecrit rien
 npm run sync:drive -- --prune   # supprime aussi les fiches dont le Doc a disparu du Drive
 ```
 
-Le script convertit les **Google Docs** (et fichiers `.md`/`.txt`) en fiches
-markdown. **Garde-fou** : chaque nouvelle fiche arrive en `exposable: false` —
+Le script gere **tous les types** : Google Docs → markdown, Google Slides →
+texte, Google Sheets → CSV, fichiers `.md`/`.txt` repris tels quels, **PDF**
+(texte extrait dans la fiche + PDF rendu telechargeable), et les autres binaires
+(docx, pptx, images...) copies en piece telechargeable. **Garde-fou** : chaque
+nouvelle fiche arrive en `exposable: false` —
 elle n'entre PAS dans le corpus public tant que tu n'as pas bascule le flag a la
 main. Re-lancer la synchro **ne touche pas** a tes reglages (`exposable`,
 `client`, `role`, `tags`, titre retravaille...) : seul le corps est rafraichi.

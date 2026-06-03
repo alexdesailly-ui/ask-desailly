@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "googleapis": "^144.0.0",
+    "pdf-parse": "^1.1.1",
     "vercel": "^39.0.0"
   },
   "engines": {
