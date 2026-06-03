@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alexandre Desailly — clone numerique</title>
+    <meta
+      name="description"
+      content="Posez vos questions a Alexandre Desailly, consultant en management et systemes d'information (Product Owner / chef de projet IT / architecte fonctionnel)."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero">
+        <img
+          class="avatar"
+          src="./assets/photo.svg"
+          alt="Alexandre Desailly"
+          width="72"
+          height="72"
+        />
+        <div class="hero__text">
+          <h1>Alexandre Desailly</h1>
+          <p class="role">
+            Consultant management &amp; SI · Product Owner / chef de projet IT ·
+            architecte fonctionnel
+          </p>
+          <p class="pitch">
+            Posez vos questions sur mes missions et mes livrables. Je reponds
+            moi-meme — uniquement a partir de ce que je peux partager
+            publiquement.
+          </p>
+        </div>
+      </header>
+
+      <section class="chat" id="chat" aria-live="polite">
+        <div class="msg msg--bot">
+          <div class="bubble">
+            Bonjour. Posez-moi une question sur mon parcours ou mes livrables —
+            par exemple : « Parle-moi d'une mission en assurance » ou « Comment
+            tu rediges tes user stories ? ».
+          </div>
+        </div>
+      </section>
+
+      <div class="suggestions" id="suggestions">
+        <button type="button" class="chip">Parle-moi d'une mission en assurance</button>
+        <button type="button" class="chip">Comment tu pilotes un projet ?</button>
+        <button type="button" class="chip">As-tu un exemple de cahier des charges ?</button>
+      </div>
+
+      <form class="composer" id="composer" autocomplete="off">
+        <input
+          id="input"
+          type="text"
+          placeholder="Votre question…"
+          aria-label="Votre question"
+          maxlength="2000"
+          required
+        />
+        <button type="submit" id="send" aria-label="Envoyer">Envoyer</button>
+      </form>
+
+      <footer class="footer">
+        <span>Vitrine conversationnelle · reponses bornees au corpus public.</span>
+      </footer>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

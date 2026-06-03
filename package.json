@@ -1,0 +1,20 @@
+{
+  "name": "ask-desailly",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clone numerique conversationnel d'Alexandre Desailly - vitrine professionnelle",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "devDependencies": {
+    "vercel": "^39.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

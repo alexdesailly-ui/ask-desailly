@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Env / secrets (NE JAMAIS commiter la vraie cle API)
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel
+
+# OS / editeurs
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
