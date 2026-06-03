@@ -6,6 +6,10 @@ node_modules/
 .env.local
 .env.*.local
 
+# Credentials du compte de service Google (sync Drive) - NE JAMAIS commiter
+drive-credentials.json
+*.service-account.json
+
 # Vercel
 .vercel
 

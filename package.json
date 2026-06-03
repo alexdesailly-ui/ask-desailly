@@ -6,12 +6,14 @@
   "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "sync:drive": "node scripts/sync-drive.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0"
   },
   "devDependencies": {
+    "googleapis": "^144.0.0",
     "vercel": "^39.0.0"
   },
   "engines": {

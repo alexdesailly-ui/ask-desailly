@@ -131,6 +131,41 @@ instructions DNS. HTTPS est gere automatiquement.
 
 > Mise a jour 100 % manuelle et assumee : fiche + fichier + push = a jour.
 
+### Alimenter depuis Google Drive (sync a la demande)
+
+Plutot que de creer les fiches a la main, tu peux deposer tes documents dans un
+dossier Drive dedie et lancer une synchro qui les convertit en fiches markdown.
+
+**Mise en place (une fois) :**
+
+1. Cree un dossier Drive dedie, ex. `Corpus clone`. C'est ton back-office :
+   tout ce que tu y mets devient candidat au corpus (mais reste prive par defaut).
+2. Cree un **compte de service Google** (console.cloud.google.com → API & Services
+   → Credentials → Service Account), active l'**API Google Drive**, telecharge la
+   cle JSON et place-la dans `drive-credentials.json` (deja gitignore, jamais commite).
+3. **Partage** le dossier Drive avec l'email du compte de service (droit Lecteur).
+4. Recopie l'id du dossier (dans son URL `drive.google.com/drive/folders/<ID>`)
+   dans `DRIVE_FOLDER_ID` (voir `.env.example`).
+
+**A chaque mise a jour :**
+
+```bash
+npm install            # une fois, pour installer googleapis
+npm run sync:drive     # aspire le Drive -> content/livrables/drive-*.md
+# Options :
+npm run sync:drive -- --dry     # simulation, n'ecrit rien
+npm run sync:drive -- --prune   # supprime aussi les fiches dont le Doc a disparu du Drive
+```
+
+Le script convertit les **Google Docs** (et fichiers `.md`/`.txt`) en fiches
+markdown. **Garde-fou** : chaque nouvelle fiche arrive en `exposable: false` —
+elle n'entre PAS dans le corpus public tant que tu n'as pas bascule le flag a la
+main. Re-lancer la synchro **ne touche pas** a tes reglages (`exposable`,
+`client`, `role`, `tags`, titre retravaille...) : seul le corps est rafraichi.
+
+> Le sync est un outil **local** : le site en production ne lit jamais ton Drive.
+> Workflow type : `sync:drive` → relis et marque `exposable: true` → `push`.
+
 ---
 
 ## 5. Ajuster le style / les garde-fous
