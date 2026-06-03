@@ -9,31 +9,44 @@
       content="Posez vos questions a Alexandre Desailly, consultant en management et systemes d'information (Product Owner / chef de projet IT / architecte fonctionnel)."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="app">
-      <header class="hero">
-        <img
-          class="avatar"
-          src="./assets/photo.png"
-          alt="Alexandre Desailly"
-          width="72"
-          height="72"
-        />
-        <div class="hero__text">
-          <h1>Alexandre Desailly</h1>
-          <p class="role">
-            Consultant management &amp; SI · Product Owner / chef de projet IT ·
-            architecte fonctionnel
-          </p>
-          <p class="pitch">
-            Posez vos questions sur mes missions et mes livrables. Je reponds
-            moi-meme — uniquement a partir de ce que je peux partager
-            publiquement.
-          </p>
+    <!-- Barre marine, facon agilecorp.fr -->
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <img
+            class="brand__avatar"
+            src="./assets/photo.png"
+            alt="Alexandre Desailly"
+            width="48"
+            height="48"
+          />
+          <div class="brand__id">
+            <span class="brand__name">Alexandre <span class="accent">Desailly</span></span>
+            <span class="brand__role">Product Owner · chef de projet IT · architecte fonctionnel</span>
+          </div>
         </div>
-      </header>
+        <button type="button" class="cta" id="cta">Parlons-en</button>
+      </div>
+    </header>
+
+    <main class="app">
+      <section class="intro">
+        <p class="eyebrow">CLONE NUMERIQUE</p>
+        <h1>Posez vos questions. Concretement.</h1>
+        <p class="lead">
+          Je reponds moi-meme sur mes missions et mes livrables — uniquement a
+          partir de ce que je peux partager publiquement. Si je n'ai pas l'info,
+          je le dis.
+        </p>
+      </section>
 
       <section class="chat" id="chat" aria-live="polite">
         <div class="msg msg--bot">
@@ -64,7 +77,7 @@
       </form>
 
       <footer class="footer">
-        <span>Vitrine conversationnelle · reponses bornees au corpus public.</span>
+        Vitrine conversationnelle · reponses bornees au corpus public.
       </footer>
     </main>
 

@@ -1,15 +1,19 @@
 :root {
-  --bg: #0f1419;
-  --surface: #161c24;
-  --surface-2: #1e2630;
-  --border: #2a323d;
-  --text: #e7ecf2;
-  --text-dim: #9aa7b4;
-  --accent: #4f9cf9;
-  --accent-soft: #1d3a5f;
-  --user-bubble: #294a73;
+  /* Palette inspiree d'agilecorp.fr : marine + rouge brique, fond clair */
+  --navy: #14213d;
+  --navy-deep: #101a30;
+  --red: #c0392b;
+  --red-hover: #a93226;
+  --bg: #ffffff;
+  --bg-alt: #f7f8fa;
+  --text: #1f2733;
+  --text-muted: #6b7280;
+  --border: #e6e8ec;
+  --cream: #f6f0e8;
+  --user-bubble: #14213d;
   --radius: 14px;
-  --max: 760px;
+  --radius-sm: 8px;
+  --max: 820px;
   font-synthesis: none;
 }
 
@@ -21,67 +25,143 @@ html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  line-height: 1.55;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-}
-
-.app {
-  max-width: var(--max);
-  margin: 0 auto;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: 24px 18px 16px;
+  min-height: 100dvh;
 }
 
-/* --- Hero --- */
-.hero {
+/* --- Topbar marine --- */
+.topbar {
+  background: var(--navy);
+  border-bottom: 3px solid var(--red);
+}
+
+.topbar__inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 14px 18px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
-  align-items: flex-start;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
 }
 
-.avatar {
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand__avatar {
   border-radius: 50%;
   flex: 0 0 auto;
-  border: 2px solid var(--border);
-  background: var(--surface-2);
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.18);
 }
 
-.hero__text h1 {
-  margin: 0 0 2px;
-  font-size: 1.45rem;
+.brand__id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand__name {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
   letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
-.role {
-  margin: 0 0 8px;
-  color: var(--accent);
-  font-size: 0.9rem;
-  font-weight: 500;
+.brand__name .accent {
+  color: var(--red);
 }
 
-.pitch {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: 0.92rem;
+.brand__role {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cta {
+  flex: 0 0 auto;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 22px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cta:hover {
+  background: var(--red-hover);
+}
+
+/* --- Layout principal --- */
+.app {
+  max-width: var(--max);
+  width: 100%;
+  margin: 0 auto;
+  padding: 34px 18px 20px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Intro --- */
+.intro {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  margin: 0 0 10px;
+}
+
+.intro h1 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  line-height: 1.1;
+}
+
+.lead {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 /* --- Chat --- */
 .chat {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 18px 2px;
+  padding: 6px 0 14px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -90,36 +170,34 @@ body {
 .msg {
   display: flex;
 }
-
 .msg--user {
   justify-content: flex-end;
 }
 
 .bubble {
-  max-width: 86%;
-  padding: 11px 15px;
+  max-width: 84%;
+  padding: 13px 17px;
   border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   word-wrap: break-word;
   overflow-wrap: anywhere;
 }
 
+.msg--bot .bubble {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-top-left-radius: 4px;
+  box-shadow: 0 1px 2px rgba(16, 26, 48, 0.04);
+}
+
 .msg--user .bubble {
   background: var(--user-bubble);
-  border-color: transparent;
-}
-
-.msg--bot .bubble {
-  border-top-left-radius: 4px;
-}
-
-.msg--user .bubble {
+  color: #fff;
   border-top-right-radius: 4px;
 }
 
-/* Markdown rendu dans les bulles */
+/* Markdown dans les bulles */
 .bubble p {
   margin: 0 0 0.6em;
 }
@@ -127,7 +205,11 @@ body {
   margin-bottom: 0;
 }
 .bubble a {
-  color: var(--accent);
+  color: var(--red);
+  font-weight: 500;
+}
+.msg--user .bubble a {
+  color: #ffd9d3;
 }
 .bubble ul,
 .bubble ol {
@@ -138,12 +220,18 @@ body {
   margin: 0.15em 0;
 }
 .bubble code {
-  background: var(--surface-2);
+  background: var(--bg-alt);
   padding: 0.1em 0.35em;
   border-radius: 6px;
   font-size: 0.88em;
 }
+.msg--user .bubble code {
+  background: rgba(255, 255, 255, 0.16);
+}
 .bubble strong {
+  color: var(--navy);
+}
+.msg--user .bubble strong {
   color: #fff;
 }
 
@@ -157,7 +245,7 @@ body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--text-dim);
+  background: var(--text-muted);
   animation: blink 1.2s infinite ease-in-out both;
 }
 .typing span:nth-child(2) {
@@ -182,59 +270,64 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 4px 0 12px;
+  padding: 4px 0 14px;
 }
 
 .chip {
-  background: var(--surface);
-  color: var(--text-dim);
+  background: var(--bg-alt);
+  color: var(--text);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 7px 13px;
-  font-size: 0.83rem;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  font-family: inherit;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .chip:hover {
-  color: var(--text);
-  border-color: var(--accent);
+  border-color: var(--red);
+  color: var(--red);
 }
 
 /* --- Composer --- */
 .composer {
   display: flex;
   gap: 10px;
-  padding-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
 }
 
 #input {
   flex: 1 1 auto;
-  background: var(--surface);
+  background: #fff;
   border: 1px solid var(--border);
   color: var(--text);
-  border-radius: 12px;
-  padding: 13px 15px;
-  font-size: 0.96rem;
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 0.97rem;
+  font-family: inherit;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 #input:focus {
-  border-color: var(--accent);
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(20, 33, 61, 0.08);
 }
 
 #send {
-  background: var(--accent);
-  color: #06121f;
+  background: var(--red);
+  color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 0 20px;
-  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  padding: 0 24px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: background 0.15s ease;
 }
 #send:hover {
-  opacity: 0.9;
+  background: var(--red-hover);
 }
 #send:disabled {
   opacity: 0.5;
@@ -244,23 +337,22 @@ body {
 /* --- Footer --- */
 .footer {
   text-align: center;
-  color: var(--text-dim);
-  font-size: 0.76rem;
-  padding-top: 12px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  padding-top: 16px;
 }
 
-@media (max-width: 520px) {
-  .hero {
-    gap: 12px;
+@media (max-width: 560px) {
+  .brand__role {
+    display: none;
   }
-  .avatar {
-    width: 56px;
-    height: 56px;
+  .cta {
+    padding: 10px 16px;
   }
-  .hero__text h1 {
-    font-size: 1.2rem;
+  .topbar__inner {
+    padding: 12px 14px;
   }
   .bubble {
-    max-width: 92%;
+    max-width: 90%;
   }
 }
