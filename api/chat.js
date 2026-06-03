@@ -5,6 +5,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { buildContext } from "../lib/corpus.js";
+import { fetchGithubContext } from "../lib/github.js";
 
 const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-4-6";
 const MAX_TOKENS = 1024;
@@ -94,6 +95,18 @@ export default async function handler(req, res) {
   }
 
   const { systemPrompt, corpus } = buildContext(getBaseUrl(req));
+  // Activite GitHub publique (projets en cours). Ne bloque jamais le chat.
+  const github = await fetchGithubContext();
+
+  const system = [
+    // Bloc 1 : instructions de style (stable) — mis en cache.
+    { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
+    // Bloc 2 : corpus profil + livrables (stable) — mis en cache.
+    { type: "text", text: corpus, cache_control: { type: "ephemeral" } },
+  ];
+  // Bloc 3 : activite GitHub (evolue) — non cache, place apres pour preserver
+  // le cache des blocs precedents.
+  if (github) system.push({ type: "text", text: github });
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -101,12 +114,7 @@ export default async function handler(req, res) {
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: MAX_TOKENS,
-      system: [
-        // Bloc 1 : instructions de style (stable) — mis en cache.
-        { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
-        // Bloc 2 : corpus (stable entre deux deploiements) — mis en cache.
-        { type: "text", text: corpus, cache_control: { type: "ephemeral" } },
-      ],
+      system,
       messages,
     });
 

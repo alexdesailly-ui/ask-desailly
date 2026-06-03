@@ -79,7 +79,20 @@ Sur Vercel : **Project → Settings → Environment Variables**
 - Environments : Production (+ Preview si tu veux)
 
 Variables optionnelles : `CLAUDE_MODEL`, `RATE_LIMIT_MAX`,
-`RATE_LIMIT_WINDOW_MS` (voir `.env.example`).
+`RATE_LIMIT_WINDOW_MS`, `GITHUB_USERNAME`, `GITHUB_CACHE_MS`, `GITHUB_TOKEN`
+(voir `.env.example`).
+
+### Activite GitHub publique (projets en cours)
+
+La fonction recupere automatiquement les depots **publics** de `GITHUB_USERNAME`
+(defaut `alexdesailly-ui`), tries par activite recente, avec un extrait de README
+des projets les plus actifs, et les injecte dans le corpus. Le clone peut ainsi
+repondre a « sur quoi tu travailles en ce moment ? ».
+
+- Aucune cle requise : l'API publique GitHub suffit. `GITHUB_TOKEN` est **facultatif**
+  (uniquement pour relever la limite de taux si besoin).
+- Resultat mis en cache en memoire ~30 min (`GITHUB_CACHE_MS`).
+- Si la recuperation echoue, le chat continue normalement (le bloc est simplement omis).
 
 ---
 
