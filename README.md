@@ -169,6 +169,23 @@ main. Re-lancer la synchro **ne touche pas** a tes reglages (`exposable`,
 > Le sync est un outil **local** : le site en production ne lit jamais ton Drive.
 > Workflow type : `sync:drive` → relis et marque `exposable: true` → `push`.
 
+#### Deux pompes, une seule sortie
+
+Le connecteur Google Drive de Claude **ne peut pas** alimenter le site en direct
+(c'est une capacite cote session, pas un runtime dispo pour une app Vercel
+publique). Peu importe la voie choisie, le corpus reste des **fichiers
+committes**. On a donc deux facons de remplir `content/livrables/`, qui
+produisent une sortie **strictement identique** (meme garde-fou, meme nommage,
+via `scripts/lib/fiche.mjs`) :
+
+- **Script `sync:drive`** (self-serve) — tu le lances seul, scriptable, cron-able.
+  Necessite un compte de service Google.
+- **Import ad hoc via le connecteur** — en session, demande a Claude d'importer
+  tel(s) document(s) : il lit le Drive via le connecteur et ecrit les fiches avec
+  la meme logique. Zero compte de service, mais ponctuel (pas automatisable).
+
+Les deux cohabitent : script pour le recurrent, connecteur pour le coup par coup.
+
 ---
 
 ## 5. Ajuster le style / les garde-fous
