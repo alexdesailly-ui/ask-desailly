@@ -190,6 +190,6 @@ form.addEventListener("submit", (e) => {
 if (suggestions) {
   suggestions.addEventListener("click", (e) => {
     const chip = e.target.closest(".chip");
-    if (chip) ask(chip.textContent.trim());
+    if (chip) ask((chip.dataset.q || chip.textContent).trim());
   });
 }

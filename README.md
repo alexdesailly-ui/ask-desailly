@@ -19,7 +19,7 @@ d'un corpus qu'il fournit — et qui propose ses livrables quand c'est pertinent
 | **Contenu** | `content/` + `public/livrables/` | Parcours + fiches de livrables (a la main ou via le sync Drive) + fichiers telechargeables. |
 | **Connaissance** | `lib/corpus.js` | Charge le contenu, ne garde que `exposable: true`, construit le contexte injecte. Pas de base vectorielle (corpus petit). |
 | **Cerveau** | `api/chat.js` | Fonction serverless : assemble style + corpus + garde-fous + question, appelle Claude, renvoie la reponse. Rate limiting inclus. |
-| **Presentation** | `public/` | Page chat responsive, sobre et pro. |
+| **Presentation** | `public/` | Page chat responsive, chaleureuse (fond creme, corail doux, monogramme a la place de la photo). |
 | **Statistiques** | `lib/analytics.js` + `api/track.js` + `api/stats.js` + `public/admin/` | Qui vient, d'ou, ce qu'on demande : visites, themes, intentions, leads. Tableau de bord `/admin` protege par token. Optionnel (actif si `DATABASE_URL`). |
 
 ```
@@ -29,7 +29,7 @@ ask-desailly/
 │   ├── styles.css
 │   ├── app.js              # appelle /api/chat + ping de visite (aucune cle ici)
 │   ├── admin/              # tableau de bord /admin (token requis)
-│   ├── assets/photo.png    # ta photo
+│   ├── assets/photo.png    # ta photo (utilisee dans /admin uniquement)
 │   └── livrables/          # fichiers telechargeables -> URL /livrables/<fichier>
 ├── api/
 │   ├── chat.js             # fonction serverless (cle API ici, cote serveur)

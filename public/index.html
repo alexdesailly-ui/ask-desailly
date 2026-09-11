@@ -6,8 +6,9 @@
     <title>Alexandre Desailly — clone numerique</title>
     <meta
       name="description"
-      content="Posez vos questions a Alexandre Desailly, consultant en management et systemes d'information (Product Owner / chef de projet IT / architecte fonctionnel)."
+      content="Posez vos questions a Alexandre Desailly, Product Owner IA & Data et Business Analyst : missions, methodes, livrables."
     />
+    <meta name="theme-color" content="#fbf7f2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,62 +18,67 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <!-- Barre marine, facon agilecorp.fr -->
     <header class="topbar">
       <div class="topbar__inner">
-        <div class="brand">
-          <img
-            class="brand__avatar"
-            src="./assets/photo.png"
-            alt="Alexandre Desailly"
-            width="48"
-            height="48"
-          />
-          <div class="brand__id">
-            <span class="brand__name">Alexandre <span class="accent">Desailly</span></span>
-            <span class="brand__role">AI &amp; Data Product Owner | Business Analyst | Vibecoding × Agile Delivery</span>
-          </div>
-        </div>
+        <a class="wordmark" href="./">
+          <span class="wordmark__dot" aria-hidden="true"></span>
+          Alexandre Desailly
+        </a>
+        <span class="online"><span>En ligne · reponse en quelques secondes</span></span>
       </div>
     </header>
 
     <main class="app">
       <section class="intro">
-        <p class="eyebrow">CLONE NUMERIQUE</p>
-        <h1>Posez vos questions. Concretement.</h1>
+        <p class="eyebrow">MON CLONE CONVERSATIONNEL</p>
+        <h1>Salut, moi c'est Alexandre <span class="wave" aria-hidden="true">👋</span><br />Pose-moi tes questions.</h1>
         <p class="lead">
-          Je reponds moi-meme sur mes missions et mes livrables — uniquement a
-          partir de ce que je peux partager publiquement. Si je n'ai pas l'info,
-          je le dis.
+          <strong>Product Owner IA &amp; Data · Business Analyst.</strong>
+          Je reponds comme si j'etais la : mes missions, mes methodes, mes
+          livrables. Si je n'ai pas l'info, je te le dis.
         </p>
       </section>
 
       <section class="chat" id="chat" aria-live="polite">
         <div class="msg msg--bot">
           <div class="bubble">
-            Bonjour. Posez-moi une question sur mon parcours ou mes livrables —
-            par exemple : « Parle-moi d'une mission en assurance » ou « Comment
-            tu rediges tes user stories ? ».
+            Bienvenue ! Tu peux me demander par exemple comment je pilote un
+            projet, ce que j'ai fait sur une mission en assurance, ou comment
+            je redige mes user stories. Je reponds a partir de ce que je peux
+            partager publiquement.
           </div>
         </div>
       </section>
 
       <div class="suggestions" id="suggestions">
-        <button type="button" class="chip">Parle-moi d'une mission en assurance</button>
-        <button type="button" class="chip">Comment tu pilotes un projet ?</button>
-        <button type="button" class="chip">As-tu un exemple de cahier des charges ?</button>
+        <button type="button" class="chip" data-q="Parle-moi d'une mission en assurance">
+          <span class="emoji" aria-hidden="true">💼</span>Une mission en assurance
+        </button>
+        <button type="button" class="chip" data-q="Comment tu pilotes un projet ?">
+          <span class="emoji" aria-hidden="true">🧭</span>Comment tu pilotes un projet ?
+        </button>
+        <button type="button" class="chip" data-q="As-tu un exemple de cahier des charges ?">
+          <span class="emoji" aria-hidden="true">📄</span>Un exemple de cahier des charges
+        </button>
+        <button type="button" class="chip" data-q="Sur quoi tu travailles en ce moment ?">
+          <span class="emoji" aria-hidden="true">🚀</span>Tes projets du moment
+        </button>
       </div>
 
       <form class="composer" id="composer" autocomplete="off">
         <input
           id="input"
           type="text"
-          placeholder="Votre question…"
+          placeholder="Ecris ta question ici…"
           aria-label="Votre question"
           maxlength="2000"
           required
         />
-        <button type="submit" id="send" aria-label="Envoyer">Envoyer</button>
+        <button type="submit" id="send" aria-label="Envoyer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" /><path d="M13 6l6 6-6 6" />
+          </svg>
+        </button>
       </form>
 
       <footer class="footer">

@@ -1,4 +1,98 @@
-/* Tableau de bord — reprend la palette du site (styles.css) */
+/* Tableau de bord — feuille autonome (independante du design public) */
+
+:root {
+  --navy: #14213d;
+  --red: #c0392b;
+  --red-hover: #a93226;
+  --bg: #f7f8fa;
+  --bg-alt: #f1f3f6;
+  --text: #1f2733;
+  --text-muted: #6b7280;
+  --border: #e6e8ec;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+.topbar {
+  background: var(--navy);
+  border-bottom: 3px solid var(--red);
+}
+.topbar__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.brand__avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+}
+.brand__id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.brand__name {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+  line-height: 1.2;
+}
+.brand__name .accent {
+  color: var(--red);
+}
+.brand__role {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.eyebrow {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  margin: 0 0 10px;
+}
+.lead {
+  color: var(--text-muted);
+}
+code {
+  background: var(--bg-alt);
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
 
 .admin {
   max-width: 1180px;
