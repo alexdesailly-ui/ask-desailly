@@ -8,6 +8,62 @@ const suggestions = document.getElementById("suggestions");
 
 const history = []; // [{role, content}] envoye au backend
 
+// --- Identifiants anonymes pour les statistiques ---
+// visitorId : persistant (localStorage) -> permet de compter les retours.
+// conversationId : par chargement de page -> regroupe les questions d'un echange.
+// Aucune donnee personnelle : de simples identifiants aleatoires.
+function randomId() {
+  if (crypto.randomUUID) return crypto.randomUUID().replace(/-/g, "");
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+    b.toString(16).padStart(2, "0"),
+  ).join("");
+}
+function getVisitorId() {
+  try {
+    let id = localStorage.getItem("ad_visitor");
+    if (!id) {
+      id = randomId();
+      localStorage.setItem("ad_visitor", id);
+    }
+    return id;
+  } catch {
+    return randomId();
+  }
+}
+const visitorId = getVisitorId();
+const conversationId = randomId();
+
+// Ping de visite (provenance + campagne). Ne bloque jamais la page.
+function trackVisit() {
+  try {
+    const params = new URLSearchParams(location.search);
+    const payload = JSON.stringify({
+      type: "visit",
+      visitorId,
+      conversationId,
+      referrer: document.referrer || "",
+      path: location.pathname,
+      utm: {
+        source: params.get("utm_source") || undefined,
+        medium: params.get("utm_medium") || undefined,
+        campaign: params.get("utm_campaign") || undefined,
+      },
+    });
+    const blob = new Blob([payload], { type: "application/json" });
+    if (!(navigator.sendBeacon && navigator.sendBeacon("/api/track", blob))) {
+      fetch("/api/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true,
+      }).catch(() => {});
+    }
+  } catch {
+    /* silencieux */
+  }
+}
+trackVisit();
+
 // Rendu Markdown minimal et sur (echappement + sous-ensemble : gras, code,
 // liens, listes, paragraphes). Pas de HTML brut depuis la reponse.
 function renderMarkdown(text) {
@@ -103,7 +159,7 @@ async function ask(question) {
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: history }),
+      body: JSON.stringify({ messages: history, visitorId, conversationId }),
     });
     const data = await res.json().catch(() => ({}));
     typing.remove();

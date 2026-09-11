@@ -28,8 +28,7 @@
 //   npm run sync:drive -- --dry   # simulation, n'ecrit rien
 
 import { readFileSync, readdirSync, existsSync, unlinkSync } from "node:fs";
-import { join } from "node:path";
-import { createRequire } from "node:module";
+import { join, extname } from "node:path";
 import { google } from "googleapis";
 import {
   writeFiche,
@@ -38,9 +37,6 @@ import {
   PUBLIC_LIVRABLES_DIR,
   ROOT,
 } from "./lib/fiche.mjs";
-import { extname } from "node:path";
-
-const require = createRequire(import.meta.url);
 
 const CREDENTIALS_PATH =
   process.env.GOOGLE_SERVICE_ACCOUNT_JSON || join(ROOT, "drive-credentials.json");
@@ -50,12 +46,22 @@ const args = new Set(process.argv.slice(2));
 const DRY = args.has("--dry");
 const PRUNE = args.has("--prune");
 
-// Extraction de texte PDF (optionnelle : si pdf-parse est installe).
-let pdfParse = null;
+// Extraction de texte PDF (optionnelle : si pdf-parse v2 est installe).
+let PDFParse = null;
 try {
-  pdfParse = require("pdf-parse");
+  ({ PDFParse } = await import("pdf-parse"));
 } catch {
   // pdf-parse absent : on copiera quand meme le PDF en piece telechargeable.
+}
+
+async function extractPdfText(buffer) {
+  const parser = new PDFParse({ data: buffer });
+  try {
+    const result = await parser.getText();
+    return (result.text || "").trim();
+  } finally {
+    await parser.destroy().catch(() => {});
+  }
 }
 
 // --- Drive ---
@@ -139,11 +145,10 @@ async function fetchContent(drive, file) {
   if (mt === "application/pdf") {
     const buffer = await downloadBinary(drive, file.id);
     let body = "_(PDF — installe `pdf-parse` pour extraire le texte automatiquement.)_";
-    if (pdfParse) {
+    if (PDFParse) {
       try {
-        const parsed = await pdfParse(buffer);
         body =
-          (parsed.text || "").trim() ||
+          (await extractPdfText(buffer)) ||
           "_(PDF sans texte extractible — voir le telechargement.)_";
       } catch {
         body = "_(Echec d'extraction du texte PDF — voir le telechargement.)_";
@@ -165,7 +170,7 @@ async function main() {
   const drive = await getDrive();
 
   console.log(`Lecture du dossier Drive ${FOLDER_ID}...`);
-  if (!pdfParse) {
+  if (!PDFParse) {
     console.log(
       "Note : pdf-parse absent — les PDF seront telechargeables mais sans texte extrait (npm install).",
     );

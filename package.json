@@ -7,17 +7,20 @@
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod",
-    "sync:drive": "node scripts/sync-drive.mjs"
+    "sync:drive": "node scripts/sync-drive.mjs",
+    "analytics:purge": "node scripts/analytics-purge.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0"
+    "@anthropic-ai/sdk": "^0.125.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "@vercel/functions": "^3.9.7"
   },
   "devDependencies": {
-    "googleapis": "^144.0.0",
-    "pdf-parse": "^1.1.1",
-    "vercel": "^39.0.0"
+    "googleapis": "^180.0.0",
+    "pdf-parse": "^2.4.5",
+    "vercel": "^59.16.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

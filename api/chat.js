@@ -2,12 +2,16 @@
 // A chaque question : assemble [system prompt de style] + [corpus filtre] +
 // [garde-fous] + [historique], appelle l'API Claude, renvoie la reponse.
 // La cle API vit UNIQUEMENT cote serveur (process.env.ANTHROPIC_API_KEY).
+// L'echange est ensuite journalise en tache de fond (lib/analytics.js) :
+// jamais avant l'envoi de la reponse, jamais bloquant.
 
 import Anthropic from "@anthropic-ai/sdk";
+import { waitUntil } from "@vercel/functions";
 import { buildContext } from "../lib/corpus.js";
 import { fetchGithubContext } from "../lib/github.js";
+import { logChat, safeId } from "../lib/analytics.js";
 
-const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-4-6";
+const MODEL = process.env.CLAUDE_MODEL || "claude-sonnet-5";
 const MAX_TOKENS = 1024;
 const MAX_HISTORY = 12; // nombre de messages d'historique conserves
 const MAX_QUESTION_LEN = 2000;
@@ -43,6 +47,15 @@ function getBaseUrl(req) {
   return host ? `${proto}://${host}` : "";
 }
 
+// Journalisation en arriere-plan : la reponse part d'abord, le log suit.
+function background(promise) {
+  try {
+    waitUntil(promise);
+  } catch {
+    promise.catch(() => {});
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -55,15 +68,7 @@ export default async function handler(req, res) {
       .json({ error: "Configuration serveur incomplete (cle API manquante)." });
   }
 
-  const ip = getClientIp(req);
-  if (rateLimited(ip)) {
-    return res.status(429).json({
-      error:
-        "Trop de questions en peu de temps. Patiente une minute avant de reessayer.",
-    });
-  }
-
-  // Corps : { messages: [{role, content}] } OU { question: "..." }
+  // Corps : { messages: [{role, content}], visitorId?, conversationId? } OU { question: "..." }
   let body = req.body;
   if (typeof body === "string") {
     try {
@@ -73,6 +78,10 @@ export default async function handler(req, res) {
     }
   }
   body = body || {};
+  const ids = {
+    visitorId: safeId(body.visitorId),
+    conversationId: safeId(body.conversationId),
+  };
 
   let messages = [];
   if (Array.isArray(body.messages)) {
@@ -93,6 +102,16 @@ export default async function handler(req, res) {
   if (!messages.length || messages[messages.length - 1].role !== "user") {
     return res.status(400).json({ error: "Aucune question fournie." });
   }
+  const question = messages[messages.length - 1].content;
+
+  const ip = getClientIp(req);
+  if (rateLimited(ip)) {
+    background(logChat(req, { ...ids, question, status: "rate_limited" }));
+    return res.status(429).json({
+      error:
+        "Trop de questions en peu de temps. Patiente une minute avant de reessayer.",
+    });
+  }
 
   const { systemPrompt, corpus } = buildContext(getBaseUrl(req));
   // Activite GitHub publique (projets en cours). Ne bloque jamais le chat.
@@ -109,6 +128,7 @@ export default async function handler(req, res) {
   if (github) system.push({ type: "text", text: github });
 
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const started = Date.now();
 
   try {
     const response = await anthropic.messages.create({
@@ -124,13 +144,38 @@ export default async function handler(req, res) {
       .join("\n")
       .trim();
 
-    return res.status(200).json({
-      reply: reply || "Je n'ai pas de reponse a fournir sur ce point.",
-    });
+    const finalReply = reply || "Je n'ai pas de reponse a fournir sur ce point.";
+    res.status(200).json({ reply: finalReply });
+
+    const u = response.usage || {};
+    background(
+      logChat(req, {
+        ...ids,
+        question,
+        reply: finalReply,
+        status: "ok",
+        model: response.model || MODEL,
+        tokensIn: u.input_tokens,
+        tokensOut: u.output_tokens,
+        cacheRead: u.cache_read_input_tokens,
+        latencyMs: Date.now() - started,
+      }),
+    );
+    return;
   } catch (err) {
     console.error("Erreur API Claude:", err?.message || err);
-    return res
+    res
       .status(502)
       .json({ error: "Le service est momentanement indisponible. Reessaie." });
+    background(
+      logChat(req, {
+        ...ids,
+        question,
+        status: "error",
+        model: MODEL,
+        latencyMs: Date.now() - started,
+      }),
+    );
+    return;
   }
 }

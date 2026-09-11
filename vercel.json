@@ -4,6 +4,9 @@
     "api/chat.js": {
       "includeFiles": "content/**",
       "maxDuration": 30
+    },
+    "api/stats.js": {
+      "maxDuration": 15
     }
   },
   "headers": [

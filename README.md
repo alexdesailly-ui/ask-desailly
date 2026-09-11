@@ -6,34 +6,44 @@ projet IT / architecte fonctionnel), dans son style, **uniquement** a partir
 d'un corpus qu'il fournit — et qui propose ses livrables quand c'est pertinent.
 
 - Hebergement : **Vercel** (statique + fonction serverless), gratuit, HTTPS, 24/7.
-- Modele : **Claude Sonnet 4.6** (`claude-sonnet-4-6`), appele cote serveur.
+- Modele : **Claude Sonnet 5** (`claude-sonnet-5`), appele cote serveur. Runtime Node 20+.
 - La cle API n'est **jamais** exposee au navigateur (variable d'environnement).
 - Reponses bornees au corpus : pas d'invention, garde-fous de confidentialite.
 
 ---
 
-## Architecture (4 couches)
+## Architecture (5 couches)
 
 | Couche | Ou | Role |
 |---|---|---|
-| **Contenu** | `content/` + `public/livrables/` | Parcours + fiches de livrables (que tu remplis a la main) + fichiers telechargeables. |
+| **Contenu** | `content/` + `public/livrables/` | Parcours + fiches de livrables (a la main ou via le sync Drive) + fichiers telechargeables. |
 | **Connaissance** | `lib/corpus.js` | Charge le contenu, ne garde que `exposable: true`, construit le contexte injecte. Pas de base vectorielle (corpus petit). |
 | **Cerveau** | `api/chat.js` | Fonction serverless : assemble style + corpus + garde-fous + question, appelle Claude, renvoie la reponse. Rate limiting inclus. |
 | **Presentation** | `public/` | Page chat responsive, sobre et pro. |
+| **Statistiques** | `lib/analytics.js` + `api/track.js` + `api/stats.js` + `public/admin/` | Qui vient, d'ou, ce qu'on demande : visites, themes, intentions, leads. Tableau de bord `/admin` protege par token. Optionnel (actif si `DATABASE_URL`). |
 
 ```
 ask-desailly/
 ├── public/                 # servi au navigateur
 │   ├── index.html          # page chat
 │   ├── styles.css
-│   ├── app.js              # appelle /api/chat (aucune cle ici)
-│   ├── assets/photo.svg    # avatar placeholder (remplace par ta photo)
+│   ├── app.js              # appelle /api/chat + ping de visite (aucune cle ici)
+│   ├── admin/              # tableau de bord /admin (token requis)
+│   ├── assets/photo.png    # ta photo
 │   └── livrables/          # fichiers telechargeables -> URL /livrables/<fichier>
 ├── api/
-│   └── chat.js             # fonction serverless (cle API ici, cote serveur)
+│   ├── chat.js             # fonction serverless (cle API ici, cote serveur)
+│   ├── track.js            # enregistre une visite (provenance, UTM)
+│   └── stats.js            # agregats pour /admin (ADMIN_TOKEN)
 ├── lib/
-│   └── corpus.js           # chargement + filtre exposable + contexte
-├── content/                # CE QUE TU REMPLIS A LA MAIN
+│   ├── corpus.js           # chargement + filtre exposable + contexte
+│   ├── github.js           # activite GitHub publique (projets en cours)
+│   └── analytics.js        # stockage Postgres, classification, statistiques
+├── scripts/
+│   ├── sync-drive.mjs      # Google Drive -> content/livrables (a la demande)
+│   ├── analytics-purge.mjs # retention des statistiques
+│   └── lib/fiche.mjs       # ecriture des fiches (garde-fou exposable)
+├── content/                # CE QUE TU REMPLIS (a la main ou via le Drive)
 │   ├── profil.md           # ta bio (public)
 │   ├── system-prompt.md    # ton style + garde-fous
 │   └── livrables/          # une fiche .md par livrable
@@ -79,8 +89,61 @@ Sur Vercel : **Project → Settings → Environment Variables**
 - Environments : Production (+ Preview si tu veux)
 
 Variables optionnelles : `CLAUDE_MODEL`, `RATE_LIMIT_MAX`,
-`RATE_LIMIT_WINDOW_MS`, `GITHUB_USERNAME`, `GITHUB_CACHE_MS`, `GITHUB_TOKEN`
-(voir `.env.example`).
+`RATE_LIMIT_WINDOW_MS`, `GITHUB_USERNAME`, `GITHUB_CACHE_MS`, `GITHUB_TOKEN`,
+et pour les statistiques `DATABASE_URL`, `ADMIN_TOKEN`, `IP_HASH_SALT`,
+`CLASSIFIER_MODEL` (voir `.env.example`).
+
+### Statistiques : qui vient, ce qu'on me demande (tableau de bord `/admin`)
+
+Pour piloter la prospection, le site enregistre chaque visite et chaque
+question, puis les classe. Tout est **desactive tant que `DATABASE_URL` n'est
+pas renseignee** : sans base, le site fonctionne exactement comme avant.
+
+**Mise en place (une fois, ~5 min) :**
+
+1. **Base Postgres** : sur Vercel, *Project → Storage → Create Database → Neon*
+   (gratuit). Vercel ajoute `DATABASE_URL` tout seul. La table est creee
+   automatiquement au premier evenement.
+2. **Token d'acces** : ajoute `ADMIN_TOKEN` (un long secret aleatoire, ex.
+   `openssl rand -hex 24`) dans les variables d'environnement.
+3. Optionnel : `IP_HASH_SALT` (sel du hash d'IP), `CLASSIFIER_MODEL` (defaut
+   Haiku 4.5, qui classe chaque question).
+4. Redeploie, puis ouvre **`https://ton-domaine/admin`** et saisis le token.
+
+**Ce que tu vois :**
+
+- **Trafic** : visites, visiteurs uniques, visiteurs revenus, appareils, pays et
+  villes (geolocalisation fournie par Vercel, sans stocker l'IP).
+- **Provenance** : sites referents (LinkedIn, Google…) et campagnes **UTM** — tague
+  tes liens `?utm_source=linkedin&utm_campaign=post-sept` pour savoir quel post
+  amene qui.
+- **Ce qu'on demande** : chaque question est classee par **theme** (parcours,
+  competences, missions, livrables, methode, IA & data, dispo/tarif, contact…)
+  et par **intention** : *chaud* (veut recruter, missionner, un tarif, une dispo),
+  *tiede* (evalue le profil), *froid* (curiosite).
+- **Leads a rappeler** : intention chaude **ou** contact laisse dans la question
+  (email / telephone extraits automatiquement).
+- **Conversations** : le fil complet question → reponse, regroupe par visiteur,
+  avec recherche et filtres. **Export CSV** pour ton CRM.
+- **Sante / cout** : latence moyenne, erreurs, tokens consommes et part servie
+  depuis le cache.
+
+**Comment ca marche :** `api/chat.js` repond d'abord, puis journalise en tache
+de fond (`waitUntil`) — zero latence ajoutee. `api/track.js` recoit le ping de
+visite (`sendBeacon`). `api/stats.js` calcule les agregats (token obligatoire).
+Les robots (LinkedInBot, Googlebot…) sont exclus des visites.
+
+**RGPD (site public, visiteurs anonymes) :**
+
+- L'IP n'est **jamais** stockee : uniquement un hash sale et tronque. Le
+  user-agent est reduit a un type d'appareil. Les identifiants visiteur /
+  conversation sont des aleas generes par le navigateur, sans donnee personnelle.
+- Les questions sont conservees telles quelles (elles peuvent contenir un contact
+  laisse volontairement par le visiteur). Une mention figure en pied de page.
+- **Retention** : purge les evenements anciens avec
+  `DATABASE_URL=... npm run analytics:purge -- --days 365`.
+- Si tu veux aller plus loin (bandeau de consentement, registre de traitement),
+  c'est a evaluer selon ton usage commercial des donnees.
 
 ### Activite GitHub publique (projets en cours)
 

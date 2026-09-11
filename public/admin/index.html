@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Tableau de bord — Ask Desailly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <img class="brand__avatar" src="/assets/photo.png" alt="" width="48" height="48" />
+          <div class="brand__id">
+            <span class="brand__name">Alexandre <span class="accent">Desailly</span></span>
+            <span class="brand__role">Tableau de bord · qui vient, ce qu'on me demande</span>
+          </div>
+        </div>
+        <div class="toolbar" id="toolbar" hidden>
+          <select id="days" aria-label="Periode">
+            <option value="7">7 jours</option>
+            <option value="30" selected>30 jours</option>
+            <option value="90">90 jours</option>
+            <option value="365">12 mois</option>
+          </select>
+          <button type="button" id="refresh" class="btn btn--ghost">Actualiser</button>
+          <button type="button" id="export" class="btn btn--ghost">Exporter CSV</button>
+          <button type="button" id="logout" class="btn btn--ghost" title="Oublier le token">Quitter</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin">
+      <!-- Acces -->
+      <section class="gate card" id="gate">
+        <p class="eyebrow">ACCES RESERVE</p>
+        <h1>Tableau de bord</h1>
+        <p class="lead">Saisis le token d'administration (variable <code>ADMIN_TOKEN</code> sur Vercel).</p>
+        <form id="gate-form" class="gate__form" autocomplete="off">
+          <input id="token" type="password" placeholder="ADMIN_TOKEN" aria-label="Token" required />
+          <button type="submit" class="btn">Entrer</button>
+        </form>
+        <p class="gate__error" id="gate-error" hidden></p>
+      </section>
+
+      <!-- Tableau de bord -->
+      <div id="dash" hidden>
+        <p class="status" id="status"></p>
+
+        <section class="kpis" id="kpis"></section>
+
+        <section class="card">
+          <div class="card__head">
+            <h2>Visites, questions et leads par jour</h2>
+            <span class="hint">Les robots (LinkedIn, Google…) sont exclus des visites.</span>
+          </div>
+          <div class="chart chart--wide"><canvas id="c-series"></canvas></div>
+        </section>
+
+        <section class="grid-2">
+          <div class="card">
+            <div class="card__head"><h2>D'ou viennent les visiteurs</h2><span class="hint">site referent</span></div>
+            <div class="chart"><canvas id="c-sources"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card__head"><h2>Pays</h2><span class="hint">visiteurs uniques</span></div>
+            <div class="chart"><canvas id="c-countries"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card__head"><h2>Ce qu'on me demande</h2><span class="hint">theme des questions</span></div>
+            <div class="chart"><canvas id="c-themes"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card__head"><h2>Intention</h2><span class="hint">chaud = veut recruter / missionner</span></div>
+            <div class="chart"><canvas id="c-intents"></canvas></div>
+          </div>
+        </section>
+
+        <section class="grid-2">
+          <div class="card">
+            <div class="card__head"><h2>Campagnes (UTM)</h2><span class="hint">?utm_source=…&amp;utm_campaign=…</span></div>
+            <div class="table-wrap"><table id="t-utm"></table></div>
+          </div>
+          <div class="card">
+            <div class="card__head"><h2>Villes &amp; appareils</h2></div>
+            <div class="table-wrap"><table id="t-cities"></table></div>
+          </div>
+        </section>
+
+        <section class="card card--accent">
+          <div class="card__head">
+            <h2>Leads a rappeler</h2>
+            <span class="hint">intention chaude ou contact laisse dans la question</span>
+          </div>
+          <div class="table-wrap"><table id="t-leads"></table></div>
+        </section>
+
+        <section class="card">
+          <div class="card__head">
+            <h2>Conversations</h2>
+            <div class="filters">
+              <input id="q-search" type="search" placeholder="Rechercher dans les questions…" aria-label="Recherche" />
+              <select id="q-theme" aria-label="Theme"><option value="">Tous les themes</option></select>
+              <select id="q-intent" aria-label="Intention">
+                <option value="">Toutes intentions</option>
+                <option value="chaud">Chaud</option>
+                <option value="tiede">Tiede</option>
+                <option value="froid">Froid</option>
+              </select>
+              <label class="check"><input type="checkbox" id="q-lead" /> Leads seulement</label>
+            </div>
+          </div>
+          <div id="convs" class="convs"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+    <script src="/admin/admin.js"></script>
+  </body>
+</html>
