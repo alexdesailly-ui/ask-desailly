@@ -5,6 +5,9 @@
       "includeFiles": "content/**",
       "maxDuration": 30
     },
+    "api/livrable.js": {
+      "maxDuration": 30
+    },
     "api/stats.js": {
       "maxDuration": 15
     }

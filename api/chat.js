@@ -113,7 +113,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const { systemPrompt, corpus } = buildContext(getBaseUrl(req));
+  const { systemPrompt, corpus } = await buildContext(getBaseUrl(req));
   // Activite GitHub publique (projets en cours). Ne bloque jamais le chat.
   const github = await fetchGithubContext();
 

@@ -194,6 +194,24 @@ instructions DNS. HTTPS est gere automatiquement.
 
 > Mise a jour 100 % manuelle et assumee : fiche + fichier + push = a jour.
 
+### Source dynamique : le Drive lu en direct (recommande)
+
+Le clone lit directement un dossier Drive a chaque conversation (cache 10 min) :
+tu deposes ou modifies un document, le clone le sait sans commit ni redeploiement.
+Le lien de telechargement passe par `/api/livrable?id=...`, qui ne sert que les
+fichiers de ce dossier.
+
+**Regle de confidentialite : tout ce qui est dans ce dossier est public.** Cree un
+dossier dedie (ex. `Clone - public`) et n'y mets que des documents anonymises.
+
+Mise en place : memes etapes 2 a 4 que ci-dessous (compte de service, partage du
+dossier en Lecteur, id du dossier), puis dans Vercel > Settings > Environment
+Variables : `DRIVE_FOLDER_ID` et `GOOGLE_SERVICE_ACCOUNT_JSON` (colle le contenu du
+JSON, ou son base64). Types lus : Docs, Slides, Sheets, PDF (texte extrait), .md,
+.txt. Les autres fichiers (docx, pptx...) sont telechargeables mais sans texte.
+Le champ « description » du fichier Drive est repris comme contexte. Sans ces
+variables, ou si le dossier est vide, le site retombe sur `content/livrables/`.
+
 ### Alimenter depuis Google Drive (sync a la demande)
 
 Plutot que de creer les fiches a la main, tu peux deposer tes documents dans un
@@ -229,7 +247,7 @@ elle n'entre PAS dans le corpus public tant que tu n'as pas bascule le flag a la
 main. Re-lancer la synchro **ne touche pas** a tes reglages (`exposable`,
 `client`, `role`, `tags`, titre retravaille...) : seul le corps est rafraichi.
 
-> Le sync est un outil **local** : le site en production ne lit jamais ton Drive.
+> Ce sync est un outil **local** (fiches committees). Pour une lecture en direct, voir la section precedente.
 > Workflow type : `sync:drive` → relis et marque `exposable: true` → `push`.
 
 #### Deux pompes, une seule sortie
