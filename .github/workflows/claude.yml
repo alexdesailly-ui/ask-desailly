@@ -1,0 +1,65 @@
+# Agent correcteur : répond à « @claude … » dans une PR ou un ticket, applique les correctifs,
+# vérifie avec `node --check` sur les fichiers modifiés et pousse sur la branche de la PR (jamais sur la branche par défaut).
+# Seuls les humains ayant les droits d'écriture le déclenchent ; les bots sont refusés, donc pas de boucle infinie.
+# Inactif tant que le secret CLAUDE_CODE_OAUTH_TOKEN n'est pas posé (Settings → Secrets and variables → Actions).
+name: Agent @claude
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    if: >-
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CLAUDE_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+    steps:
+      - name: Secret absent → agent ignoré
+        if: env.CLAUDE_TOKEN == ''
+        run: echo "::notice::Agent @claude désactivé (secret CLAUDE_CODE_OAUTH_TOKEN absent)."
+
+      - uses: actions/checkout@v4
+        if: env.CLAUDE_TOKEN != ''
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        if: env.CLAUDE_TOKEN != ''
+        with:
+          node-version: 22
+          cache: npm
+
+      - if: env.CLAUDE_TOKEN != ''
+        run: npm ci
+
+      - uses: anthropics/claude-code-action@v1
+        if: env.CLAUDE_TOKEN != ''
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --max-turns 50
+            --allowedTools "Bash(node --check:*),Bash(git status),Bash(git diff:*),Bash(git log:*)"
+            --append-system-prompt "Respecte CLAUDE.md et .github/regles-revue.md. Le dépôt n'a ni lint ni tests : avant chaque commit, lance node --check sur chaque fichier .js ou .mjs modifié et relis ton diff. Ne touche ni à la branche par défaut, ni à .github/workflows/, ni au champ exposable d'une fiche de content/livrables/. Réponds en français, ton direct, sans emoji, et termine par la liste des constats traités et ceux laissés ouverts avec la raison."
